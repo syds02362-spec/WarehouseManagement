@@ -19,22 +19,16 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
 
-            <!-- هيدر للشاشات الصغيرة -->
+            <!-- هيدر صغير للصفحة -->
             <div class="d-md-none mb-3 text-center">
                 <h3>لوحة التحكم الرئيسية</h3>
-                <div class="btn-group-vertical w-100">
-                    <a href="{{ route('products.create') }}" class="btn btn-primary mb-2"><i class="fas fa-plus-circle"></i> إضافة صنف جديد</a>
-                    <button class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#stockInModal"><i class="fas fa-arrow-up"></i> إدخال مخزون</button>
-                    <button class="btn btn-warning mb-2" data-bs-toggle="modal" data-bs-target="#stockOutModal"><i class="fas fa-arrow-down"></i> إخراج مخزون</button>
-                    <a href="{{ route('products.report') }}" class="btn btn-info mb-2"><i class="fas fa-chart-bar"></i> تقرير المخزون</a>
-                </div>
             </div>
             <!-- بطاقات الإحصائيات -->
             <div class="row mb-4">
                 <div class="col-md-3">
                     <div class="card stat-card">
                         <div class="stat-icon text-danger"><i class="fas fa-exclamation-triangle"></i></div>
-                        <h4>{{ $expired }}</h4>
+                        <h4>{{  $expired }}</h4>
                         <p>أصناف نافذة</p>
                     </div>
                 </div>
@@ -58,6 +52,24 @@
                         <h4>{{ $total_quantity }}</h4>
                         <p>إجمالي الكمية</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- تنبيهات المخزون -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-exclamation-circle text-danger"></i> تنبيهات المخزون</h5>
+                </div>
+                <div class="card-body">
+                    @if($alerts->isEmpty())
+                        <p class="text-muted">لا توجد تنبيهات مخزون.</p>
+                    @else
+                        @foreach($alerts as $alert)
+                        <div class="alert-card p-3 mb-2 rounded">
+                            <strong>{{ $alert->name }}</strong> - الكمية الحالية: {{ $alert->quantity }} - الحد الأدنى: {{ $alert->min_quantity }}
+                        </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
 
@@ -150,13 +162,17 @@
             </div>
         </div>
 
-        <!-- الإجراءات السريعة (الشريط الجانبي) -->
         <div class="sidebar">
-            <h5>الإجراءات السريعة</h5>
-            <a href="{{ route('products.create') }}" class="btn btn-primary w-100 mb-2"><i class="fas fa-plus-circle"></i> إضافة صنف جديد</a>
-            <button class="btn btn-success w-100 mb-2" data-bs-toggle="modal" data-bs-target="#stockInModal"><i class="fas fa-arrow-up"></i> إدخال مخزون</button>
-            <button class="btn btn-warning w-100 mb-2" data-bs-toggle="modal" data-bs-target="#stockOutModal"><i class="fas fa-arrow-down"></i> إخراج مخزون</button>
-            <a href="{{ route('products.report') }}" class="btn btn-info w-100"><i class="fas fa-chart-bar"></i> تقرير المخزون</a>
+            <div class="card">
+                <div class="card-header">
+                    <h5>الإجراءات السريعة</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-success w-100 mb-2" data-bs-toggle="modal" data-bs-target="#stockInModal"><i class="fas fa-plus-circle"></i> إدخال مخزون</button>
+                    <button class="btn btn-warning w-100 mb-2" data-bs-toggle="modal" data-bs-target="#stockOutModal"><i class="fas fa-minus-circle"></i> إخراج مخزون</button>
+                    <a href="{{ route('products.report') }}" class="btn btn-info w-100"><i class="fas fa-chart-bar"></i> تقرير المخزون</a>
+                </div>
+            </div>
         </div>
     </div>
 

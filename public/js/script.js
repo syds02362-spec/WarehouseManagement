@@ -1,47 +1,57 @@
-// Handle Stock In Form
-document.getElementById('stockInForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const productId = formData.get('product_id');
-    const quantity = formData.get('quantity');
-    this.action = `/products/${productId}/stock-in`;
-    this.submit();
-});
+document.addEventListener('DOMContentLoaded', function() {
+    const stockInForm = document.getElementById('stockInForm');
+    const stockOutForm = document.getElementById('stockOutForm');
+    const searchInput = document.getElementById('searchInput');
+    const filterLowStock = document.getElementById('filterLowStock');
+    const showAll = document.getElementById('showAll');
 
-// Handle Stock Out Form
-document.getElementById('stockOutForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const productId = formData.get('product_id');
-    const quantity = formData.get('quantity');
-    this.action = `/products/${productId}/stock-out`;
-    this.submit();
-});
+    const getRows = () => Array.from(document.querySelectorAll('#productsTable tbody tr'));
+    const safeInt = value => Number.parseInt(value, 10) || 0;
 
-// Search functionality
-document.getElementById('searchInput').addEventListener('keyup', function() {
-    const filter = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#productsTable tbody tr');
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(filter) ? '' : 'none';
-    });
-});
+    const submitStockForm = (form, route) => {
+        const formData = new FormData(form);
+        const productId = formData.get('product_id');
+        form.action = `/products/${productId}/${route}`;
+        form.submit();
+    };
 
-// Filter low stock
-document.getElementById('filterLowStock').addEventListener('click', function() {
-    const rows = document.querySelectorAll('#productsTable tbody tr');
-    rows.forEach(row => {
-        const quantity = parseInt(row.getAttribute('data-quantity'));
-        const minQuantity = parseInt(row.getAttribute('data-min-quantity'));
-        row.style.display = (quantity > 0 && quantity <= minQuantity) ? '' : 'none';
-    });
-});
+    if (stockInForm) {
+        stockInForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            submitStockForm(this, 'stock-in');
+        });
+    }
 
-// Show all
-document.getElementById('showAll').addEventListener('click', function() {
-    const rows = document.querySelectorAll('#productsTable tbody tr');
-    rows.forEach(row => {
-        row.style.display = '';
-    });
+    if (stockOutForm) {
+        stockOutForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            submitStockForm(this, 'stock-out');
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            getRows().forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    }
+
+    if (filterLowStock) {
+        filterLowStock.addEventListener('click', function() {
+            getRows().forEach(row => {
+                const quantity = safeInt(row.getAttribute('data-quantity'));
+                const minQuantity = safeInt(row.getAttribute('data-min-quantity'));
+                row.style.display = (quantity > 0 && quantity <= minQuantity) ? '' : 'none';
+            });
+        });
+    }
+
+    if (showAll) {
+        showAll.addEventListener('click', function() {
+            getRows().forEach(row => row.style.display = '');
+        });
+    }
 });
